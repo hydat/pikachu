@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Pikachu Logic Demo (with lines)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1e1f22;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            /* Căn giữa table */
+            align-items: flex-start;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #gameArea {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        #refreshBtn {
+            padding: 10px 15px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            height: fit-content;
+        }
+
+        #refreshBtn:hover {
+            background: #45a049;
+        }
+
+        #boardContainer {
+            position: relative;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            border: 1px solid #ccc;
+            font-size: 24px;
+            cursor: pointer;
+            background: #fff;
+            transition: background 0.2s;
+        }
+
+        td.empty {
+            background: #1e1f22;
+            cursor: default;
+            border: none;
+        }
+
+        td.selected {
+            background: #ffef99;
+        }
+
+        svg#lineLayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #hintBtn {
+            padding: 10px 15px;
+            font-size: 16px;
+            background: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            height: fit-content;
+        }
+
+        #hintBtn:hover {
+            background: #F57C00;
+        }
+
+        #hintBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        td.hint {
+            background: #90EE90 !important;
+            animation: pulse 1s infinite;
+        }
+
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-right: 20px;
+        }
+
+        #levelDisplay {
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        #levelNumber {
+            color: #FFFF00;
+            font-size: 18px;
+            /* Nhỏ hơn một chút so với font chính */
+            margin-left: 5px;
+        }
+
+        #soundBtn {
+            padding: 10px 15px;
+            font-size: 16px;
+            background: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            height: fit-content;
+        }
+
+        #soundBtn:hover {
+            background: #F57C00;
+        }
+
+        #levelDisplay {
+            background: linear-gradient(45deg, #ffb84d, #ff9f1c);
+            color: #fff;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 10px;
+        }
+
+        #refreshBtn {
+            background: #4caf50;
+        }
+
+        #refreshBtn:hover {
+            background: #43a047;
+        }
+
+        #hintBtn {
+            background: #03a9f4;
+        }
+
+        #hintBtn:hover {
+            background: #0288d1;
+        }
+
+        #soundBtn {
+            background: #9c27b0;
+        }
+
+        #soundBtn:hover {
+            background: #7b1fa2;
+        }
+
+        #soundBtn.muted {
+            background: #616161;
+            color: #ccc;
+        }
+
+        #timerDisplay {
+            background: linear-gradient(45deg, #607d8b, #455a64);
+            padding: 10px 15px;
+            /* Giống padding của button */
+            font-size: 16px;
+            /* Giống font-size của button */
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            /* Giống border-radius của button */
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            /* Giống height của button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="gameArea">
+            <div id="buttonContainer">
+                <div id="levelDisplay">Level: <span id="levelNumber">1</span></div>
+                <button id="refreshBtn">🔄 Ván mới</button>
+                <button id="hintBtn">💡 Gợi ý</button>
+                <button id="soundBtn">🔊 Âm thanh</button>
+                <div id="timerDisplay">⏱️ 00:00:00</div>
+            </div>
+            <div id="boardContainer">
+                <svg id="lineLayer"></svg>
+                <table id="board"></table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // const ROWS = 15, COLS = 20;
+        const ROWS = 10, COLS = 20;
+        const icons = [
+            "images/2.png",
+            "images/6.png",
+            "images/8.png",
+            "images/12.png",
+            "images/15.png",
+            "images/17.png",
+            "images/18.png",
+            "images/20.png",
+            "images/24.png",
+            "images/25.png",
+            "images/28.png",
+            "images/30.png",
+            "images/33.png",
+            "images/36.png",
+            "images/38.png",
+            "images/40.png",
+            "images/42.png",
+            "images/45.png",
+            "images/49.png",
+            "images/52.png",
+            "images/55.png",
+            "images/56.png",
+            "images/59.png",
+            "images/61.png",
+            "images/64.png",
+            "images/68.png",
+            "images/71.png",
+            "images/72.png",
+            "images/76.png",
+            "images/78.png",
+            "images/80.png",
+            "images/86.png",
+            "images/89.png",
+            "images/92.png",
+            "images/95.png",
+            "images/97.png",
+            "images/99.png",
+        ];
+        let board = [];
+        let selected = [];
+        let hintPair = [];
+        const MAX_SEGMENTS = 3;
+        const MAX_TURNS = Math.max(0, MAX_SEGMENTS - 1);
+        let currentLevel = 1;
+        let soundEnabled = true;
+
+        const MIN_R = -1, MAX_R = ROWS;
+        const MIN_C = -1, MAX_C = COLS;
+
+        let startTime = null;
+        let timerInterval = null;
+
+        function startTimer() {
+            startTime = Date.now();
+            const timerDisplay = document.getElementById('timerDisplay');
+
+            timerInterval = setInterval(() => {
+                const elapsedMs = Date.now() - startTime;
+                const totalSeconds = Math.floor(elapsedMs / 1000);
+
+                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+
+                timerDisplay.textContent = `⏱️ ${hours}:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function initBoard() {
+            for (let i = icons.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [icons[i], icons[j]] = [icons[j], icons[i]];
+            }
+            const total = ROWS * COLS;
+            const pairs = [];
+            const uniqueCount = Math.floor(total / 4); // mỗi loại xuất hiện 4 lần, khó hơn
+            for (let i = 0; i < uniqueCount; i++) {
+                const icon = icons[i % icons.length];
+                pairs.push(icon, icon, icon, icon); // thêm 4 mỗi loại
+            }
+            // cắt dư
+            pairs.length = total;
+
+            // shuffle mạnh hơn: Fisher–Yates 3 lần
+            for (let t = 0; t < 3; t++) {
+                for (let i = pairs.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+                }
+            }
+
+            board = [];
+            let k = 0;
+            for (let r = 0; r < ROWS; r++) {
+                board[r] = [];
+                for (let c = 0; c < COLS; c++) {
+                    board[r][c] = pairs[k++];
+                }
+            }
+
+            // Trộn lại thêm: hoán đổi ngẫu nhiên các ô không kề nhau
+            for (let i = 0; i < total / 2; i++) {
+                const r1 = Math.floor(Math.random() * ROWS), c1 = Math.floor(Math.random() * COLS);
+                const r2 = Math.floor(Math.random() * ROWS), c2 = Math.floor(Math.random() * COLS);
+                if (Math.abs(r1 - r2) + Math.abs(c1 - c2) > 2) {
+                    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+                }
+            }
+        }
+
+        function render() {
+            const tb = document.getElementById("board");
+            tb.innerHTML = "";
+            for (let r = 0; r < ROWS; r++) {
+                const tr = document.createElement("tr");
+                for (let c = 0; c < COLS; c++) {
+                    const td = document.createElement("td");
+                    if (board[r][c] == 0) {
+                        td.className = "empty";
+                    } else {
+                        const img = document.createElement("img");
+                        img.src = board[r][c];
+                        img.style.width = "40px";
+                        img.style.height = "40px";
+                        img.style.objectFit = "contain";
+                        td.appendChild(img);
+                    }
+                    if (selected.some(p => p.r === r && p.c === c)) td.classList.add("selected");
+                    if (hintPair.some(p => p.r === r && p.c === c)) td.classList.add("hint");
+                    td.onclick = () => onClick(r, c);
+                    tr.appendChild(td);
+                }
+                tb.appendChild(tr);
+            }
+        }
+
+        function getCell(r, c) {
+            // Trong phạm vi bảng thực
+            if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+                return board[r][c];
+            }
+            // Vùng ảo (ngoài bảng) - luôn trả về 0 (trống)
+            if (r >= MIN_R && r <= MAX_R && c >= MIN_C && c <= MAX_C) {
+                return 0;
+            }
+            // Ngoài phạm vi cho phép
+            return null;
+        }
+
+        function isEmpty(r, c) { return getCell(r, c) === 0; }
+
+        function clearHorizontal(a, b) {
+            if (a.r !== b.r) return false;
+            const row = a.r;
+            const left = a.c < b.c ? a.c : b.c;
+            const right = a.c < b.c ? b.c : a.c;
+            for (let c = left + 1; c < right; c++) {
+                const val = getCell(row, c);
+                if (val === null || val !== 0) return false;
+            }
+            return true;
+        }
+
+        function clearVertical(a, b) {
+            if (a.c !== b.c) return false;
+            const col = a.c;
+            const top = a.r < b.r ? a.r : b.r;
+            const bottom = a.r < b.r ? b.r : a.r;
+            for (let r = top + 1; r < bottom; r++) {
+                const val = getCell(r, col);
+                if (val === null || val !== 0) return false;
+            }
+            return true;
+        }
+
+        function findPath(start, end) {
+            // BFS nodes: { r, c, dir, turns }
+            // dir: 0=up,1=down,2=left,3=right, null = chưa di chuyển
+            // We'll allow positions outside bảng trong vùng MIN_R..MAX_R, MIN_C..MAX_C (getCell xử lý)
+            if (start.r === end.r && start.c === end.c) return null;
+
+            // Quick direct checks (faster)
+            if (start.r === end.r && clearHorizontal(start, end)) return [start, end];
+            if (start.c === end.c && clearVertical(start, end)) return [start, end];
+
+            const dirs = [
+                [-1, 0], // up (0)
+                [1, 0],  // down (1)
+                [0, -1], // left (2)
+                [0, 1],  // right (3)
+            ];
+
+            // visited map: key = `${r},${c},${dir}` -> minimal turns to reach
+            const visited = new Map();
+            const parent = new Map(); // parent key -> previous key (for reconstruct)
+            const q = [];
+
+            // push start as seed but we don't mark start cell with a direction; we will expand from start in all 4 directions
+            for (let d = 0; d < 4; d++) {
+                const nr = start.r + dirs[d][0];
+                const nc = start.c + dirs[d][1];
+
+                // stop immediately if out of allowed virtual region
+                if (nr < MIN_R || nr > MAX_R || nc < MIN_C || nc > MAX_C) continue;
+
+                // can step into if empty or it's the end cell
+                const cellVal = getCell(nr, nc);
+                if (cellVal === null) continue;
+                if (cellVal !== 0 && !(nr === end.r && nc === end.c)) continue;
+
+                const key = `${nr},${nc},${d}`;
+                visited.set(key, 0); // 0 turns used so far (first segment started)
+                parent.set(key, `${start.r},${start.c},-1`); // parent from start (dir -1)
+                q.push({ r: nr, c: nc, dir: d, turns: 0 });
+            }
+
+            // BFS
+            let foundKey = null;
+            while (q.length) {
+                const node = q.shift();
+                const { r, c, dir, turns } = node;
+
+                // if reached end cell
+                if (r === end.r && c === end.c) {
+                    foundKey = `${r},${c},${dir}`;
+                    break;
+                }
+
+                // continue moving along same direction step by step (no new turn)
+                // also can try turning to other directions (which increments turns)
+                for (let d = 0; d < 4; d++) {
+                    const nr = r + dirs[d][0];
+                    const nc = c + dirs[d][1];
+
+                    if (nr < MIN_R || nr > MAX_R || nc < MIN_C || nc > MAX_C) continue;
+                    const cellVal = getCell(nr, nc);
+                    if (cellVal === null) continue;
+                    if (cellVal !== 0 && !(nr === end.r && nc === end.c)) continue;
+
+                    // compute new turns count
+                    const newTurns = (d === dir) ? turns : turns + 1;
+                    if (newTurns > MAX_TURNS) continue;
+
+                    const key = `${nr},${nc},${d}`;
+                    if (!visited.has(key) || visited.get(key) > newTurns) {
+                        visited.set(key, newTurns);
+                        parent.set(key, `${r},${c},${dir}`);
+                        q.push({ r: nr, c: nc, dir: d, turns: newTurns });
+                    }
+                }
+            }
+
+            if (!foundKey) return null;
+
+            // reconstruct path from foundKey back to start
+            const parts = [];
+            let curKey = foundKey;
+            while (curKey) {
+                const [sr, sc, sdir] = curKey.split(',').map(x => parseInt(x, 10));
+                // push cell coordinates
+                parts.push({ r: sr, c: sc });
+                const p = parent.get(curKey);
+                if (!p) break;
+                // parent for start was `${start.r},${start.c},-1`
+                if (p === `${start.r},${start.c},-1`) {
+                    parts.push({ r: start.r, c: start.c });
+                    break;
+                }
+                curKey = p;
+            }
+
+            // parts is from end back to start; reverse
+            parts.reverse();
+
+            // normalize so first is start and last is end
+            // ensure start included (should be)
+            if (!(parts.length && parts[0].r === start.r && parts[0].c === start.c)) {
+                parts.unshift({ r: start.r, c: start.c });
+            }
+            if (!(parts.length && parts[parts.length - 1].r === end.r && parts[parts.length - 1].c === end.c)) {
+                parts.push({ r: end.r, c: end.c });
+            }
+
+            // compress to corner points (compressPath will remove collinear points)
+            return compressPath(parts);
+        }
+
+        function canConnect(a, b) {
+            if (a.r === b.r && a.c === b.c) return null;
+            if (board[a.r][a.c] !== board[b.r][b.c]) return null;
+
+            const tmpA = board[a.r][a.c];
+            board[a.r][a.c] = 0;
+            board[b.r][b.c] = 0;
+
+            const path = findPath(a, b);
+
+            board[a.r][a.c] = tmpA;
+            board[b.r][b.c] = tmpA;
+            return path;
+        }
+
+        function compressPath(path) { // Giữ start; loại bỏ các điểm nằm trên cùng 1 đoạn thẳng (giữ điểm cuối của mỗi đoạn)
+            if (!path || path.length === 0) return [];
+            const res = [path[0]];
+            for (let i = 1; i < path.length; i++) {
+                const cur = path[i];
+                const prev = res[res.length - 1];
+                const prev2 = res.length >= 2 ? res[res.length - 2] : null;
+
+                // nếu prev2, prev và cur cùng hàng hoặc cùng cột -> prev nằm giữa 2 điểm thẳng, thay prev bằng cur
+                if (prev2) {
+                    const sameRow = (prev2.r === prev.r && prev.r === cur.r);
+                    const sameCol = (prev2.c === prev.c && prev.c === cur.c);
+                    if (sameRow || sameCol) {
+                        // replace prev bằng cur để co cụm đoạn thẳng
+                        res[res.length - 1] = cur;
+                        continue;
+                    }
+                }
+                res.push(cur);
+            }
+            return res;
+        }
+
+        function drawLine(path) {
+            const svg = document.getElementById("lineLayer");
+            svg.innerHTML = "";
+
+            if (!path || path.length === 0) return;
+
+            // element chứa bảng và svg
+            const boardEl = document.getElementById("board");
+            const containerEl = document.getElementById("boardContainer"); // phần relative wrapper
+
+            // bounding rects
+            const boardRect = boardEl.getBoundingClientRect();
+            const containerRect = containerEl.getBoundingClientRect();
+
+            // cell size (dựa vào 1 ô thực tế nếu có)
+            const firstTd = boardEl.querySelector("td");
+            const cellW = firstTd ? firstTd.getBoundingClientRect().width : 50;
+            const cellH = firstTd ? firstTd.getBoundingClientRect().height : 50;
+
+            // offset từ container tới góc trên trái của bảng
+            const offsetX = boardRect.left - containerRect.left;
+            const offsetY = boardRect.top - containerRect.top;
+
+            // set kích thước SVG (toạ độ sẽ tính relative tới container)
+            const w = Math.max(containerRect.width, boardRect.width);
+            const h = Math.max(containerRect.height, boardRect.height);
+            svg.setAttribute("width", w);
+            svg.setAttribute("height", h);
+            svg.style.width = w + "px";
+            svg.style.height = h + "px";
+            // optional: set viewBox để scale đúng nếu cần
+            svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
+            // nén path chỉ còn các điểm rẽ -> tránh nối chéo
+            const compressed = compressPath(path);
+
+            // tính toạ độ trung tâm (relative tới container)
+            const pts = compressed.map(p => {
+                // p.c, p.r có thể = -1 hoặc = COLS/ROWS -> vẫn tính được (ngoài biên)
+                const cx = offsetX + (p.c + 0.5) * cellW;
+                const cy = offsetY + (p.r + 0.5) * cellH;
+                return `${cx},${cy}`;
+            }).join(" ");
+
+            // tạo polyline
+            const pl = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+            pl.setAttribute("points", pts);
+            pl.setAttribute("stroke", "yellow");
+            pl.setAttribute("stroke-width", "4");
+            pl.setAttribute("fill", "none");
+            pl.setAttribute("stroke-linejoin", "round");
+            pl.setAttribute("stroke-linecap", "round");
+            pl.style.filter = "drop-shadow(0 0 4px rgba(255,200,0,0.6))";
+
+            svg.appendChild(pl);
+        }
+
+        function clearLine() {
+            document.getElementById("lineLayer").innerHTML = "";
+        }
+
+        function onClick(r, c) {
+            if (board[r][c] == 0) return;
+            clearHint();
+            selected.push({ r, c });
+            if (selected.length === 2) {
+                const [a, b] = selected;
+                const path = canConnect(a, b);
+                if (path) {
+                    playCorrectSound();
+                    drawLine(path);
+                    setTimeout(() => {
+                        board[a.r][a.c] = 0;
+                        board[b.r][b.c] = 0;
+                        clearLine();
+                        render();
+                        if (checkLevelClear()) {
+                            playLevelClearSound();
+                            nextLevel();
+                        }
+                    }, 200); // 0.5s hiển thị line
+                } else {
+                    playWrongSound();
+                    selected = [];
+                    render();
+                }
+                selected = [];
+            }
+            render();
+        }
+
+        function checkLevelClear() {
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c] !== 0) return false;
+                }
+            }
+            return true;
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            updateLevel();
+            // Ẩn tất cả elements
+            const container = document.getElementById("container");
+            container.style.display = "none";
+
+            const msg = document.createElement("div");
+            msg.textContent = "🎉 Chúc mừng bạn đã qua màn tiếp theo ...";
+            msg.style.position = "fixed";
+            msg.style.top = "40%";
+            msg.style.left = "50%";
+            msg.style.transform = "translate(-50%, -50%)";
+            msg.style.padding = "20px 40px";
+            msg.style.fontSize = "24px";
+            msg.style.color = "#fff";
+            msg.style.background = "rgba(0,0,0,0.7)";
+            msg.style.border = "2px solid #ffd700";
+            msg.style.borderRadius = "10px";
+            msg.style.zIndex = "1000";
+            document.body.appendChild(msg);
+
+            setTimeout(() => {
+                document.body.removeChild(msg);
+                container.style.display = "flex"; // Hiển thị lại container
+                initBoard();
+                render();
+            }, 2000);
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function createAudioContext() {
+            return new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            try {
+                const audioContext = createAudioContext();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // Âm thanh vui vẻ cho đúng: C4 -> E4 -> G4
+                oscillator.frequency.setValueAtTime(261.63, audioContext.currentTime); // C4
+                oscillator.frequency.setValueAtTime(329.63, audioContext.currentTime + 0.1); // E4
+                oscillator.frequency.setValueAtTime(392.00, audioContext.currentTime + 0.2); // G4
+
+                oscillator.type = 'triangle';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            try {
+                const audioContext = createAudioContext();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // Âm thanh buồn cho sai: G4 -> D4 -> C4
+                oscillator.frequency.setValueAtTime(392.00, audioContext.currentTime); // G4
+                oscillator.frequency.setValueAtTime(293.66, audioContext.currentTime + 0.1); // D4
+                oscillator.frequency.setValueAtTime(261.63, audioContext.currentTime + 0.2); // C4
+
+                oscillator.type = 'sawtooth';
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playLevelClearSound() {
+            if (!soundEnabled) return;
+            try {
+                const audioContext = createAudioContext();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // Âm thanh chiến thắng: C5 -> E5 -> G5 -> C6
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.15); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.3); // G5
+                oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.45); // C6
+
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.6);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function findHint() {
+            const cells = [];
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c] !== 0) {
+                        cells.push({ r, c, value: board[r][c] });
+                    }
+                }
+            }
+
+            for (let i = 0; i < cells.length; i++) {
+                for (let j = i + 1; j < cells.length; j++) {
+                    const a = cells[i];
+                    const b = cells[j];
+                    if (a.value === b.value && canConnect(a, b)) {
+                        return [a, b];
+                    }
+                }
+            }
+            return null;
+        }
+
+        function showHint() {
+            clearHint();
+            hintPair = findHint();
+
+            if (hintPair) {
+                render();
+            } else {
+                alert("Không có nước đi hợp lệ! Hãy dùng nút 🔄 Ván mới.");
+            }
+        }
+
+        function clearHint() {
+            hintPair = [];
+            const hintCells = document.querySelectorAll("td.hint");
+            hintCells.forEach(cell => cell.classList.remove("hint"));
+        }
+
+        function newGame() {
+            // Reset game state
+            selected = [];
+            hintPair = [];
+            clearHint();
+            clearLine();
+
+            // Tạo bàn chơi mới
+            initBoard();
+            render();
+        }
+
+        function updateLevel() {
+            document.getElementById('levelNumber').textContent = currentLevel;
+        }
+
+        function changeSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? "🔊 Âm thanh" : "🔇 Tắt âm thanh";
+        }
+
+        document.getElementById('hintBtn').addEventListener('click', showHint);
+        document.getElementById('refreshBtn').addEventListener('click', newGame);
+        document.getElementById('soundBtn').addEventListener('click', changeSound);
+
+        initBoard();
+        render();
+        startTimer();
+    </script>
+</body>
+
+</html>
