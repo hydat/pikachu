@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Pikachu Logic Demo (with lines)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pikachu</title>
     <style>
         body {
             font-family: sans-serif;
@@ -209,6 +210,91 @@
             align-items: center;
             justify-content: center;
             min-width: 120px;
+        }
+
+        body[data-portrait]::after {
+            content: "📱 Hãy xoay ngang điện thoại để chơi Pikachu!";
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px 40px;
+            border-radius: 10px;
+        }
+
+
+        /* Khi màn hình là điện thoại nằm ngang (landscape) */
+        @media screen and (max-width: 1024px) and (orientation: landscape) {
+            body {
+                padding: 5px;
+                overflow: hidden;
+            }
+
+            #container {
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                transform: scale(0.9);
+                transform-origin: center center;
+            }
+
+            #gameArea {
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            #buttonContainer {
+                gap: 10px;
+            }
+
+            table td {
+                width: 35px;
+                height: 35px;
+            }
+
+            table img {
+                width: 30px;
+                height: 30px;
+            }
+
+            #levelDisplay,
+            #refreshBtn,
+            #hintBtn,
+            #soundBtn,
+            #timerDisplay {
+                font-size: 14px;
+                padding: 6px 10px;
+                min-width: 90px;
+            }
+        }
+
+        /* Khi màn hình là điện thoại dọc (portrait) */
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            #container {
+                display: none;
+                /* Ẩn game */
+            }
+
+            body::after {
+                content: "📱 Hãy xoay ngang điện thoại để chơi Pikachu!";
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -851,6 +937,19 @@
         initBoard();
         render();
         startTimer();
+
+        window.addEventListener("orientationchange", () => {
+            if (window.orientation === 90 || window.orientation === -90) {
+                // Nằm ngang
+                document.getElementById("container").style.display = "flex";
+                document.body.removeAttribute("data-portrait");
+            } else {
+                // Đứng dọc
+                document.getElementById("container").style.display = "none";
+                document.body.setAttribute("data-portrait", "true");
+            }
+        });
+
     </script>
 </body>
 
