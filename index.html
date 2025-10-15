@@ -5,8 +5,7 @@
     <meta charset="utf-8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pikachu</title>
     <style>
         body {
@@ -58,6 +57,8 @@
             justify-content: center;
             align-items: center;
             vertical-align: top;
+            touch-action: manipulation;
+            -ms-touch-action: manipulation;
         }
 
         table {
@@ -949,10 +950,9 @@
             }
         });
 
-        // Thêm meta tag viewport optimization cho Safari
-        document.querySelector('meta[name="viewport"]').setAttribute('content',
-            'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, minimal-ui'
-        );
+        document.addEventListener('gesturestart', e => e.preventDefault());
+        document.addEventListener('gesturechange', e => e.preventDefault());
+        document.addEventListener('gestureend', e => e.preventDefault());
 
     </script>
 </body>
