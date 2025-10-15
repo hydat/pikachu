@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, minimal-ui, maximum-scale=1.0">
     <title>Pikachu</title>
     <style>
         body {
@@ -212,6 +213,13 @@
                 padding: 3%;
                 /* GIẢM PADDING CHO ĐIỆN THOẠI */
                 height: 100vh;
+                height: -webkit-fill-available;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                overflow: hidden;
             }
 
             #container {
@@ -262,6 +270,29 @@
                 font-size: 18px;
                 font-weight: bold;
                 padding: 20px;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            body {
+                /* Safari mobile */
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+        }
+
+        /* Ẩn address bar trên Safari mobile */
+        @media screen and (max-width: 1024px) {
+            html {
+                height: -webkit-fill-available;
+            }
+
+            body {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+                position: fixed;
+                width: 100%;
+                overflow: hidden;
             }
         }
     </style>
@@ -893,6 +924,36 @@
                 document.body.setAttribute("data-portrait", "true");
             }
         });
+
+        function hideAddressBar() {
+            if (window.innerHeight < window.outerHeight) {
+                setTimeout(() => {
+                    window.scrollTo(0, 1);
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 100);
+                }, 500);
+            }
+        }
+
+        // Gọi khi load và khi xoay màn hình
+        window.addEventListener('load', hideAddressBar);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(hideAddressBar, 500);
+
+            if (window.orientation === 90 || window.orientation === -90) {
+                document.getElementById("container").style.display = "flex";
+                document.body.removeAttribute("data-portrait");
+            } else {
+                document.getElementById("container").style.display = "none";
+                document.body.setAttribute("data-portrait", "true");
+            }
+        });
+
+        // Thêm meta tag viewport optimization cho Safari
+        document.querySelector('meta[name="viewport"]').setAttribute('content',
+            'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, minimal-ui'
+        );
 
     </script>
 </body>
