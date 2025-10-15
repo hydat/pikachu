@@ -10,47 +10,57 @@
             font-family: sans-serif;
             background: #1e1f22;
             margin: 0;
-            padding: 20px;
-        }
-
-        #container {
-            position: relative;
+            padding: 5%;
             display: flex;
             justify-content: center;
-            /* Căn giữa table */
-            align-items: flex-start;
-            width: 100%;
-            margin-top: 20px;
+            align-items: center;
+            height: 100vh;
+            /* THAY ĐỔI TỪ min-height: 90vh */
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        #gameArea {
-            position: relative;
+        /* --- Container chính --- */
+        #container {
             display: flex;
-            align-items: flex-start;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1600px;
+            box-sizing: border-box;
+        }
+
+        /* --- Cột nút điều khiển --- */
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
             gap: 20px;
+            align-items: center;
+            justify-content: center;
         }
 
-        #refreshBtn {
-            padding: 10px 15px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            height: fit-content;
-        }
-
-        #refreshBtn:hover {
-            background: #45a049;
+        /* --- Khu vực bàn chơi --- */
+        #gameArea {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            gap: 20px;
         }
 
         #boardContainer {
             position: relative;
+            display: inline-block;
+            justify-content: center;
+            align-items: center;
+            vertical-align: top;
         }
 
         table {
             border-collapse: collapse;
+            margin: 0;
+            padding: 0;
         }
 
         td {
@@ -58,9 +68,8 @@
             height: 50px;
             text-align: center;
             border: 1px solid #ccc;
-            font-size: 24px;
-            cursor: pointer;
             background: #fff;
+            cursor: pointer;
             transition: background 0.2s;
         }
 
@@ -74,6 +83,32 @@
             background: #ffef99;
         }
 
+        td.hint {
+            background: #90EE90 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                background: #90EE90 !important;
+            }
+
+            50% {
+                background: #32CD32 !important;
+            }
+
+            100% {
+                background: #90EE90 !important;
+            }
+        }
+
+        table img {
+            width: 42px;
+            height: 42px;
+            display: block;
+            margin: auto;
+        }
+
         svg#lineLayer {
             position: absolute;
             top: 0;
@@ -83,83 +118,16 @@
             pointer-events: none;
         }
 
-        #hintBtn {
+        /* --- Nút và hiển thị thông tin --- */
+        button {
             padding: 10px 15px;
             font-size: 16px;
-            background: #FF9800;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             height: fit-content;
-        }
-
-        #hintBtn:hover {
-            background: #F57C00;
-        }
-
-        #hintBtn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        td.hint {
-            background: #90EE90 !important;
-            animation: pulse 1s infinite;
-        }
-
-        #buttonContainer {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-right: 20px;
-        }
-
-        #levelDisplay {
-            padding: 10px 15px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background: linear-gradient(45deg, #FF6B35, #F7931E);
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            height: fit-content;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             min-width: 120px;
-        }
-
-        #levelNumber {
-            color: #FFFF00;
-            font-size: 18px;
-            /* Nhỏ hơn một chút so với font chính */
-            margin-left: 5px;
-        }
-
-        #soundBtn {
-            padding: 10px 15px;
-            font-size: 16px;
-            background: #FF9800;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            height: fit-content;
-        }
-
-        #soundBtn:hover {
-            background: #F57C00;
-        }
-
-        #levelDisplay {
-            background: linear-gradient(45deg, #ffb84d, #ff9f1c);
-            color: #fff;
-            font-weight: bold;
-            padding: 8px 16px;
-            border-radius: 10px;
         }
 
         #refreshBtn {
@@ -178,6 +146,11 @@
             background: #0288d1;
         }
 
+        #hintBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
         #soundBtn {
             background: #9c27b0;
         }
@@ -191,71 +164,64 @@
             color: #ccc;
         }
 
-        #timerDisplay {
-            background: linear-gradient(45deg, #607d8b, #455a64);
-            padding: 10px 15px;
-            /* Giống padding của button */
-            font-size: 16px;
-            /* Giống font-size của button */
-            font-weight: bold;
+        #levelDisplay {
+            background: linear-gradient(45deg, #ffb84d, #ff9f1c);
             color: #fff;
-            border: none;
+            font-weight: bold;
+            padding: 10px 15px;
+            /* THỐNG NHẤT VỚI BUTTON */
+            font-size: 16px;
+            /* THỐNG NHẤT VỚI BUTTON */
             border-radius: 5px;
-            /* Giống border-radius của button */
+            /* THỐNG NHẤT VỚI BUTTON */
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            height: fit-content;
-            /* Giống height của button */
             display: flex;
             align-items: center;
             justify-content: center;
             min-width: 120px;
+            height: fit-content;
+            /* THỐNG NHẤT VỚI BUTTON */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
-        body[data-portrait]::after {
-            content: "📱 Hãy xoay ngang điện thoại để chơi Pikachu!";
-            color: white;
+        #levelNumber {
+            color: #FFFF00;
             font-size: 18px;
-            font-weight: bold;
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px 40px;
-            border-radius: 10px;
+            margin-left: 5px;
         }
 
+        #timerDisplay {
+            background: linear-gradient(45deg, #607d8b, #455a64);
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 120px;
+            height: fit-content;
+            /* THÊM DÒNG NÀY */
+        }
 
-        /* Khi màn hình là điện thoại nằm ngang (landscape) */
+        /* --- Responsive: điện thoại nằm ngang --- */
         @media screen and (max-width: 1024px) and (orientation: landscape) {
             body {
-                padding: 5px;
-                overflow: hidden;
+                padding: 3%;
+                /* GIẢM PADDING CHO ĐIỆN THOẠI */
+                height: 100vh;
             }
 
             #container {
                 flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                transform: scale(0.9);
+                transform: scale(0.85);
                 transform-origin: center center;
-            }
-
-            #gameArea {
-                flex-direction: row;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            }
-
-            #buttonContainer {
                 gap: 10px;
             }
 
             table td {
-                width: 35px;
-                height: 35px;
+                width: 36px;
+                height: 36px;
             }
 
             table img {
@@ -274,18 +240,18 @@
             }
         }
 
-        /* Khi màn hình là điện thoại dọc (portrait) */
+        /* --- Responsive: điện thoại dọc --- */
         @media screen and (max-width: 768px) and (orientation: portrait) {
             body {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 text-align: center;
+                height: 100vh;
             }
 
             #container {
                 display: none;
-                /* Ẩn game */
             }
 
             body::after {
@@ -307,18 +273,17 @@
                 <button id="refreshBtn">🔄 Ván mới</button>
                 <button id="hintBtn">💡 Gợi ý</button>
                 <button id="soundBtn">🔊 Âm thanh</button>
-                <div id="timerDisplay">⏱️ 00:00:00</div>
             </div>
             <div id="boardContainer">
-                <svg id="lineLayer"></svg>
                 <table id="board"></table>
+                <svg id="lineLayer"></svg>
             </div>
         </div>
     </div>
 
     <script>
+        const ROWS = 10, COLS = 16;
         // const ROWS = 15, COLS = 20;
-        const ROWS = 10, COLS = 20;
         const icons = [
             "images/2.png",
             "images/6.png",
@@ -371,22 +336,6 @@
 
         let startTime = null;
         let timerInterval = null;
-
-        function startTimer() {
-            startTime = Date.now();
-            const timerDisplay = document.getElementById('timerDisplay');
-
-            timerInterval = setInterval(() => {
-                const elapsedMs = Date.now() - startTime;
-                const totalSeconds = Math.floor(elapsedMs / 1000);
-
-                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-                const seconds = String(totalSeconds % 60).padStart(2, '0');
-
-                timerDisplay.textContent = `⏱️ ${hours}:${minutes}:${seconds}`;
-            }, 1000);
-        }
 
         function stopTimer() {
             clearInterval(timerInterval);
@@ -655,56 +604,50 @@
 
             if (!path || path.length === 0) return;
 
-            // element chứa bảng và svg
+            // Lấy elements
             const boardEl = document.getElementById("board");
-            const containerEl = document.getElementById("boardContainer"); // phần relative wrapper
+            const boardContainer = document.getElementById("boardContainer");
 
-            // bounding rects
+            // Lấy bounding rects
             const boardRect = boardEl.getBoundingClientRect();
-            const containerRect = containerEl.getBoundingClientRect();
+            const containerRect = boardContainer.getBoundingClientRect();
 
-            // cell size (dựa vào 1 ô thực tế nếu có)
+            // Kích thước cell thực tế
             const firstTd = boardEl.querySelector("td");
             const cellW = firstTd ? firstTd.getBoundingClientRect().width : 50;
             const cellH = firstTd ? firstTd.getBoundingClientRect().height : 50;
 
-            // offset từ container tới góc trên trái của bảng
+            // Set SVG size bằng với boardContainer
+            svg.setAttribute("width", containerRect.width);
+            svg.setAttribute("height", containerRect.height);
+            svg.setAttribute("viewBox", `0 0 ${containerRect.width} ${containerRect.height}`);
+
+            // Tính offset từ boardContainer đến board
             const offsetX = boardRect.left - containerRect.left;
             const offsetY = boardRect.top - containerRect.top;
 
-            // set kích thước SVG (toạ độ sẽ tính relative tới container)
-            const w = Math.max(containerRect.width, boardRect.width);
-            const h = Math.max(containerRect.height, boardRect.height);
-            svg.setAttribute("width", w);
-            svg.setAttribute("height", h);
-            svg.style.width = w + "px";
-            svg.style.height = h + "px";
-            // optional: set viewBox để scale đúng nếu cần
-            svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-
-            // nén path chỉ còn các điểm rẽ -> tránh nối chéo
             const compressed = compressPath(path);
 
-            // tính toạ độ trung tâm (relative tới container)
+            // Tính points với offset
             const pts = compressed.map(p => {
-                // p.c, p.r có thể = -1 hoặc = COLS/ROWS -> vẫn tính được (ngoài biên)
                 const cx = offsetX + (p.c + 0.5) * cellW;
                 const cy = offsetY + (p.r + 0.5) * cellH;
                 return `${cx},${cy}`;
             }).join(" ");
 
-            // tạo polyline
-            const pl = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-            pl.setAttribute("points", pts);
-            pl.setAttribute("stroke", "yellow");
-            pl.setAttribute("stroke-width", "4");
-            pl.setAttribute("fill", "none");
-            pl.setAttribute("stroke-linejoin", "round");
-            pl.setAttribute("stroke-linecap", "round");
-            pl.style.filter = "drop-shadow(0 0 4px rgba(255,200,0,0.6))";
+            // Tạo polyline
+            const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+            polyline.setAttribute("points", pts);
+            polyline.setAttribute("stroke", "yellow");
+            polyline.setAttribute("stroke-width", "4");
+            polyline.setAttribute("fill", "none");
+            polyline.setAttribute("stroke-linejoin", "round");
+            polyline.setAttribute("stroke-linecap", "round");
+            polyline.style.filter = "drop-shadow(0 0 4px rgba(255,200,0,0.6))";
 
-            svg.appendChild(pl);
+            svg.appendChild(polyline);
         }
+
 
         function clearLine() {
             document.getElementById("lineLayer").innerHTML = "";
@@ -936,7 +879,6 @@
 
         initBoard();
         render();
-        startTimer();
 
         window.addEventListener("orientationchange", () => {
             if (window.orientation === 90 || window.orientation === -90) {
