@@ -53,34 +53,46 @@
 
         #boardContainer {
             position: relative;
-            display: inline-block;
+            display: flex;
             justify-content: center;
             align-items: center;
-            vertical-align: top;
-            touch-action: manipulation;
-            -ms-touch-action: manipulation;
+            width: auto;
+            height: auto;
         }
 
         table {
             border-collapse: collapse;
             margin: 0;
             padding: 0;
+            table-layout: fixed;
+            width: auto;
         }
 
         td {
             width: 50px;
             height: 50px;
+            min-width: 50px;
+            max-width: 50px;
             text-align: center;
             border: 1px solid #ccc;
             background: #fff;
             cursor: pointer;
             transition: background 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
+            position: relative;
         }
 
         td.empty {
-            background: #1e1f22;
+            background: transparent;
             cursor: default;
             border: none;
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            max-width: 50px;
         }
 
         td.selected {
@@ -107,10 +119,11 @@
         }
 
         table img {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             display: block;
             margin: auto;
+            object-fit: contain;
         }
 
         svg#lineLayer {
@@ -208,6 +221,10 @@
             /* THÊM DÒNG NÀY */
         }
 
+        tr {
+            height: 50px;
+        }
+
         /* --- Responsive: điện thoại nằm ngang --- */
         @media screen and (max-width: 1024px) and (orientation: landscape) {
             body {
@@ -257,20 +274,54 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                text-align: center;
                 height: 100vh;
+                transform: rotate(90deg);
+                /* XOAY TOÀN BỘ 90 ĐỘ */
+                transform-origin: center center;
+                width: 100vh;
+                /* ĐỔI KÍCH THƯỚC */
+                height: 100vw;
+                position: fixed;
+                top: 0;
+                left: 0;
+                overflow: hidden;
             }
 
             #container {
-                display: none;
+                display: flex;
+                /* HIỂN THỊ GAME */
+                transform: scale(0.65);
+                /* THU NHỎ ĐỂ VỪA */
+                transform-origin: center center;
+                gap: 15px;
             }
 
+            /* XÓA message yêu cầu xoay */
             body::after {
-                content: "📱 Hãy xoay ngang điện thoại để chơi Pikachu!";
-                color: white;
-                font-size: 18px;
-                font-weight: bold;
-                padding: 20px;
+                display: none !important;
+            }
+
+            /* Điều chỉnh kích thước elements */
+            table td {
+                width: 35px;
+                height: 35px;
+            }
+
+            table img {
+                width: 28px;
+                height: 28px;
+            }
+
+            button,
+            #levelDisplay,
+            #timerDisplay {
+                font-size: 12px;
+                padding: 6px 8px;
+                min-width: 70px;
+            }
+
+            #buttonContainer {
+                gap: 8px;
             }
         }
 
@@ -316,7 +367,7 @@
     </div>
 
     <script>
-        const ROWS = 8, COLS = 16;
+        const ROWS = 8, COLS = 14;
         const icons = [
             "images/2.png",
             "images/6.png",
@@ -937,17 +988,17 @@
         initBoard();
         render();
 
-        window.addEventListener("orientationchange", () => {
-            if (window.orientation === 90 || window.orientation === -90) {
-                // Nằm ngang
-                document.getElementById("container").style.display = "flex";
-                document.body.removeAttribute("data-portrait");
-            } else {
-                // Đứng dọc
-                document.getElementById("container").style.display = "none";
-                document.body.setAttribute("data-portrait", "true");
-            }
-        });
+        // window.addEventListener("orientationchange", () => {
+        //     if (window.orientation === 90 || window.orientation === -90) {
+        //         // Nằm ngang
+        //         document.getElementById("container").style.display = "flex";
+        //         document.body.removeAttribute("data-portrait");
+        //     } else {
+        //         // Đứng dọc
+        //         document.getElementById("container").style.display = "none";
+        //         document.body.setAttribute("data-portrait", "true");
+        //     }
+        // });
 
         function hideAddressBar() {
             if (window.innerHeight < window.outerHeight) {
