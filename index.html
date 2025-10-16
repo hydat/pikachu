@@ -225,6 +225,89 @@
             height: 50px;
         }
 
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: firework-explode 1s ease-out forwards;
+        }
+
+        @keyframes firework-explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        .spark {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            animation: spark-fly 2s ease-out forwards;
+        }
+
+        @keyframes spark-fly {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        /* Tia sáng từ trung tâm */
+        .firework-ray {
+            position: absolute;
+            width: 2px;
+            height: 30px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transform-origin: center bottom;
+            animation: ray-spread 1.5s ease-out forwards;
+        }
+
+        @keyframes ray-spread {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1, 1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.5, 1.5);
+                opacity: 0;
+            }
+        }
+
         /* --- Responsive: điện thoại nằm ngang --- */
         @media screen and (max-width: 1024px) and (orientation: landscape) {
             body {
@@ -426,6 +509,106 @@
 
         function stopTimer() {
             clearInterval(timerInterval);
+        }
+
+        function createFireworks() {
+            const container = document.createElement('div');
+            container.className = 'fireworks-container';
+            document.body.appendChild(container);
+
+            // Tạo 30 quả pháo hoa ở vị trí ngẫu nhiên
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    createSingleFirework(container);
+                }, i * 100); // Delay mỗi quả 100ms
+            }
+
+            // Xóa container sau 5 giây
+            setTimeout(() => {
+                if (document.body.contains(container)) {
+                    document.body.removeChild(container);
+                }
+            }, 3000);
+        }
+
+        function createSingleFirework(container) {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8', '#ff7675'];
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * (window.innerHeight * 0.6) + window.innerHeight * 0.1; // Ở phần trên màn hình
+
+            // Tạo tâm pháo hoa
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = x + 'px';
+            firework.style.top = y + 'px';
+            firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            container.appendChild(firework);
+
+            // Tạo các tia lửa bay ra xung quanh
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createSpark(container, x, y, colors[Math.floor(Math.random() * colors.length)]);
+                }, 100);
+            }
+
+            // Tạo các tia sáng
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createRay(container, x, y, i * 30); // Mỗi tia cách nhau 30 độ
+                }, 150);
+            }
+        }
+
+        function createSpark(container, centerX, centerY, color) {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.backgroundColor = color;
+            spark.style.boxShadow = `0 0 6px ${color}`;
+
+            // Vị trí ban đầu
+            spark.style.left = centerX + 'px';
+            spark.style.top = centerY + 'px';
+
+            // Hướng bay ngẫu nhiên
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 100 + 50;
+            const endX = centerX + Math.cos(angle) * distance;
+            const endY = centerY + Math.sin(angle) * distance;
+
+            container.appendChild(spark);
+
+            // Animation bay ra
+            spark.animate([
+                { transform: 'translate(0, 0)', opacity: 1 },
+                { transform: `translate(${endX - centerX}px, ${endY - centerY}px)`, opacity: 0 }
+            ], {
+                duration: 1500,
+                easing: 'ease-out'
+            });
+
+            // Xóa sau khi animation xong
+            setTimeout(() => {
+                if (container.contains(spark)) {
+                    container.removeChild(spark);
+                }
+            }, 1500);
+        }
+
+        function createRay(container, centerX, centerY, rotation) {
+            const ray = document.createElement('div');
+            ray.className = 'firework-ray';
+            ray.style.left = centerX + 'px';
+            ray.style.top = centerY + 'px';
+            ray.style.transform = `rotate(${rotation}deg)`;
+
+            container.appendChild(ray);
+
+            // Xóa sau 1.5 giây
+            setTimeout(() => {
+                if (container.contains(ray)) {
+                    container.removeChild(ray);
+                }
+            }, 1500);
         }
 
         function initBoard() {
@@ -805,6 +988,8 @@
             const container = document.getElementById("container");
             container.style.display = "none";
 
+            createFireworks();
+
             const msg = document.createElement("div");
             msg.textContent = "🎉 Chúc mừng bạn đã qua màn tiếp theo ...";
             msg.style.position = "fixed";
@@ -812,12 +997,19 @@
             msg.style.left = "50%";
             msg.style.transform = "translate(-50%, -50%)";
             msg.style.padding = "20px 40px";
-            msg.style.fontSize = "24px";
+            msg.style.fontSize = "20px";
             msg.style.color = "#fff";
             msg.style.background = "rgba(0,0,0,0.7)";
             msg.style.border = "2px solid #ffd700";
             msg.style.borderRadius = "10px";
             msg.style.zIndex = "1000";
+            msg.style.textAlign = "center";
+            msg.style.whiteSpace = "nowrap"; // Không cho xuống dòng
+            msg.style.display = "flex";
+            msg.style.alignItems = "center";
+            msg.style.justifyContent = "center";
+            msg.style.minWidth = "auto"; // Tự động điều chỉnh độ rộng
+            msg.style.width = "auto";
             document.body.appendChild(msg);
 
             setTimeout(() => {
@@ -825,7 +1017,7 @@
                 container.style.display = "flex"; // Hiển thị lại container
                 initBoard();
                 render();
-            }, 2000);
+            }, 3000);
         }
 
         function shuffle(arr) {
@@ -1089,20 +1281,6 @@
                 }
             }, 1500);
         }
-
-        // Gọi khi load và khi xoay màn hình
-        window.addEventListener('load', hideAddressBar);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(hideAddressBar, 500);
-
-            if (window.orientation === 90 || window.orientation === -90) {
-                document.getElementById("container").style.display = "flex";
-                document.body.removeAttribute("data-portrait");
-            } else {
-                document.getElementById("container").style.display = "none";
-                document.body.setAttribute("data-portrait", "true");
-            }
-        });
 
         document.addEventListener('gesturestart', e => e.preventDefault());
         document.addEventListener('gesturechange', e => e.preventDefault());
