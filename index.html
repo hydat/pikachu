@@ -416,7 +416,8 @@
     </div>
 
     <script>
-        const ROWS = 8, COLS = 14;
+        // const ROWS = 8, COLS = 14;
+        const ROWS = 2, COLS = 2;
         const icons = [
             "images/2.png",
             "images/6.png",
@@ -545,7 +546,7 @@
             container.appendChild(firework);
 
             // Tạo các tia lửa bay ra xung quanh
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 150; i++) {
                 setTimeout(() => {
                     createSpark(container, x, y, colors[Math.floor(Math.random() * colors.length)]);
                 }, 100);
