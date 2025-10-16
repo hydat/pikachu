@@ -424,7 +424,8 @@
             }
 
             // Trộn lại thêm: hoán đổi ngẫu nhiên các ô không kề nhau
-            for (let i = 0; i < total / 2; i++) {
+            // Mỗi lần qua level sẽ tăng thêm mức độ trộn lên (currentLevel * 10) lần
+            for (let i = 0; i < (total / 2) + parseInt(currentLevel * 10); i++) {
                 const r1 = Math.floor(Math.random() * ROWS), c1 = Math.floor(Math.random() * COLS);
                 const r2 = Math.floor(Math.random() * ROWS), c2 = Math.floor(Math.random() * COLS);
                 if (Math.abs(r1 - r2) + Math.abs(c1 - c2) > 2) {
@@ -954,17 +955,17 @@
         initBoard();
         render();
 
-        // window.addEventListener("orientationchange", () => {
-        //     if (window.orientation === 90 || window.orientation === -90) {
-        //         // Nằm ngang
-        //         document.getElementById("container").style.display = "flex";
-        //         document.body.removeAttribute("data-portrait");
-        //     } else {
-        //         // Đứng dọc
-        //         document.getElementById("container").style.display = "none";
-        //         document.body.setAttribute("data-portrait", "true");
-        //     }
-        // });
+        window.addEventListener("orientationchange", () => {
+            if (window.orientation === 90 || window.orientation === -90) {
+                // Nằm ngang
+                document.getElementById("container").style.display = "flex";
+                document.body.removeAttribute("data-portrait");
+            } else {
+                // Đứng dọc
+                document.getElementById("container").style.display = "none";
+                document.body.setAttribute("data-portrait", "true");
+            }
+        });
 
         function hideAddressBar() {
             if (window.innerHeight < window.outerHeight) {
