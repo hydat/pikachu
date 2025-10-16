@@ -274,54 +274,20 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: 100vh;
-                transform: rotate(90deg);
-                /* XOAY TOÀN BỘ 90 ĐỘ */
-                transform-origin: center center;
-                width: 100vh;
-                /* ĐỔI KÍCH THƯỚC */
-                height: 100vw;
-                position: fixed;
-                top: 0;
-                left: 0;
-                overflow: hidden;
+                text-align: center;
             }
 
             #container {
-                display: flex;
-                /* HIỂN THỊ GAME */
-                transform: scale(0.65);
-                /* THU NHỎ ĐỂ VỪA */
-                transform-origin: center center;
-                gap: 15px;
+                display: none;
             }
 
             /* XÓA message yêu cầu xoay */
             body::after {
-                display: none !important;
-            }
-
-            /* Điều chỉnh kích thước elements */
-            table td {
-                width: 35px;
-                height: 35px;
-            }
-
-            table img {
-                width: 28px;
-                height: 28px;
-            }
-
-            button,
-            #levelDisplay,
-            #timerDisplay {
-                font-size: 12px;
-                padding: 6px 8px;
-                min-width: 70px;
-            }
-
-            #buttonContainer {
-                gap: 8px;
+                content: "📱 Hãy xoay ngang điện thoại để chơi Pikachu!";
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 20px;
             }
         }
 
