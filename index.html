@@ -438,6 +438,67 @@
                 padding-bottom: max(20px, env(safe-area-inset-bottom));
             }
         }
+
+        @media screen and (max-width: 414px) and (max-height: 736px) {
+            #container {
+                transform: translate(-50%, -50%) scale(0.75);
+                /* THU NHỎ XUỐNG 75% */
+                transform-origin: center center;
+            }
+
+            /* Thu nhỏ các elements */
+            table td {
+                width: 35px;
+                height: 35px;
+            }
+
+            table img {
+                width: 30px;
+                height: 30px;
+            }
+
+            button,
+            #levelDisplay,
+            #timerDisplay {
+                font-size: 12px;
+                padding: 6px 8px;
+                min-width: 80px;
+            }
+
+            #buttonContainer {
+                gap: 8px;
+            }
+
+            #container {
+                gap: 15px;
+            }
+        }
+
+        /* iPhone 8 Plus landscape */
+        @media screen and (max-width: 736px) and (max-height: 414px) and (orientation: landscape) {
+            #container {
+                transform: translate(-50%, -50%) scale(0.7);
+                /* THU NHỎ HƠN NỮA */
+            }
+
+            table td {
+                width: 30px;
+                height: 30px;
+            }
+
+            table img {
+                width: 25px;
+                height: 25px;
+            }
+
+            button,
+            #levelDisplay,
+            #timerDisplay {
+                font-size: 10px;
+                padding: 4px 6px;
+                min-width: 60px;
+            }
+        }
     </style>
 </head>
 
