@@ -12,7 +12,6 @@
             font-family: sans-serif;
             background: #1e1f22;
             margin: 0;
-            padding: 15% 3% 3% 3%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -418,27 +417,15 @@
     <script>
         const ROWS = 8, COLS = 14;
         const icons = [
-            "images/2.png",
             "images/6.png",
-            "images/8.png",
-            "images/12.png",
             "images/15.png",
             "images/17.png",
             "images/18.png",
-            "images/20.png",
             "images/24.png",
-            "images/26.png",
-            "images/28.png",
-            "images/30.png",
-            "images/33.png",
-            "images/36.png",
             "images/38.png",
-            "images/40.png",
             "images/42.png",
-            "images/45.png",
             "images/49.png",
             "images/53.png",
-            "images/55.png",
             "images/57.png",
             "images/59.png",
             "images/62.png",
@@ -454,7 +441,6 @@
             "images/89.png",
             "images/92.png",
             "images/95.png",
-            "images/97.png",
             "images/99.png",
             "images/103.png",
             "images/108.png",
@@ -462,17 +448,10 @@
             "images/111.png",
             "images/112.png",
             "images/115.png",
-            "images/119.png",
-            "images/121.png",
-            "images/122.png",
-            "images/123.png",
             "images/125.png",
-            "images/127.png",
             "images/128.png",
             "images/130.png",
             "images/131.png",
-            "images/136.png",
-            "images/139.png",
             "images/141.png",
             "images/142.png",
             "images/144.png",
@@ -480,20 +459,8 @@
             "images/148.png",
             "images/149.png",
             "images/150.png",
-            "images/153.png",
-            "images/156.png",
             "images/160.png",
-            "images/162.png",
-            "images/164.png",
             "images/169.png",
-            "images/171.png",
-            "images/184.png",
-            "images/186.png",
-            "images/195.png",
-            "images/199.png",
-            "images/203.png",
-            "images/205.png",
-            "images/207.png",
             "images/212.png",
             "images/217.png",
             "images/219.png",
@@ -503,26 +470,21 @@
             "images/229.png",
             "images/230.png",
             "images/232.png",
-            "images/234.png",
             "images/242.png",
             "images/243.png",
             "images/244.png",
             "images/248.png",
             "images/249.png",
             "images/250.png",
-            "images/253.png",
             "images/257.png",
             "images/260.png",
             "images/262.png",
-            "images/267.png",
             "images/272.png",
             "images/275.png",
             "images/277.png",
             "images/279.png",
             "images/282.png",
             "images/284.png",
-            "images/286.png",
-            "images/288.png",
             "images/289.png",
             "images/294.png",
             "images/297.png",
@@ -536,7 +498,6 @@
             "images/332.png",
             "images/334.png",
             "images/336.png",
-            "images/340.png",
             "images/342.png",
             "images/344.png",
             "images/346.png",
@@ -544,8 +505,6 @@
             "images/350.png",
             "images/356.png",
             "images/357.png",
-            "images/362.png",
-            "images/364.png",
             "images/367.png",
             "images/373.png",
             "images/375.png",
@@ -554,13 +513,11 @@
             "images/381.png",
             "images/383.png",
             "images/386.png",
-            "images/388.png",
             "images/395.png",
             "images/398.png",
             "images/400.png",
             "images/405.png",
             "images/409.png",
-            "images/416.png",
             "images/419.png",
             "images/424.png",
             "images/432.png",
@@ -754,8 +711,8 @@
                     } else {
                         const img = document.createElement("img");
                         img.src = board[r][c];
-                        img.style.width = "40px";
-                        img.style.height = "40px";
+                        img.style.width = "53px";
+                        img.style.height = "53px";
                         img.style.objectFit = "contain";
                         td.appendChild(img);
                     }
