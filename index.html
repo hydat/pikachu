@@ -1447,9 +1447,9 @@
                 clearHint();
                 clearLine();
                 currentLevel = 1;
+                initBoard();
                 updateLevel();
                 saveGameProgress();
-                initBoard();
                 render();
             };
         }
@@ -1467,19 +1467,24 @@
             try {
                 const cookies = document.cookie.split(';');
 
-                const levelCookie = cookies.find(cookie =>
-                    cookie.trim().startsWith('pikachuLevel=')
+                const gameStateCookie = cookies.find(cookie =>
+                    cookie.trim().startsWith('pikachuGameState=')
                 );
 
-                if (levelCookie) {
-                    const savedLevel = parseInt(levelCookie.split('=')[1].trim());
-                    if (savedLevel && savedLevel > 0) {
-                        currentLevel = savedLevel;
-                    }
+                if (gameStateCookie) {
+                    const encodedData = gameStateCookie.split('=')[1].trim();
+                    const gameData = decodeURIComponent(encodedData);
+                    const gameState = JSON.parse(gameData);
+                    currentLevel = gameState.level;
+                    board = gameState.board;
+                } else {
+                    initBoard();
+                    currentLevel = 1;
                 }
 
             } catch (error) {
                 console.log('Cannot load from cookie:', error);
+                initBoard();
                 currentLevel = 1;
             }
             updateLevel();
@@ -1490,7 +1495,6 @@
         document.getElementById('soundBtn').addEventListener('click', changeSound);
 
         loadGameProgress();
-        initBoard();
         render();
 
         window.addEventListener("orientationchange", () => {
@@ -1593,17 +1597,28 @@
 
         function saveGameProgress() {
             try {
+                const gameState = {
+                    level: currentLevel,
+                    board: board,
+                    timestamp: Date.now()
+                };
+                const gameData = JSON.stringify(gameState);
+                const encodedData = encodeURIComponent(gameData);
                 const expireDate = new Date();
                 expireDate.setFullYear(expireDate.getFullYear() + 100);
 
-                document.cookie = `pikachuLevel=${currentLevel}; expires=${expireDate.toUTCString()}; path=/; SameSite=Lax`;
-
-                document.cookie = `pikachuSaved=${Date.now()}; expires=${expireDate.toUTCString()}; path=/; SameSite=Lax`;
+                document.cookie = `pikachuGameState=${encodedData}; expires=${expireDate.toUTCString()}; path=/; SameSite=Lax`;
 
             } catch (error) {
                 console.log('Cannot save to cookie:', error);
             }
         }
+
+        setInterval(() => {
+            if (currentLevel > 1 || board.some(row => row.some(cell => cell !== 0))) {
+                saveGameProgress();
+            }
+        }, 30000);
 
         document.addEventListener('gesturestart', e => e.preventDefault());
         document.addEventListener('gesturechange', e => e.preventDefault());
