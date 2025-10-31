@@ -507,7 +507,7 @@
         <div id="gameArea">
             <div id="buttonContainer">
                 <div id="levelDisplay">Level: <span id="levelNumber">1</span></div>
-                <button id="refreshBtn">🔄 Ván mới</button>
+                <button id="refreshBtn">🔄 Chơi lại</button>
                 <button id="hintBtn">💡 Gợi ý</button>
                 <button id="soundBtn">🔊 Âm thanh</button>
             </div>
@@ -1201,6 +1201,7 @@
         function nextLevel() {
             currentLevel++;
             updateLevel();
+            saveGameProgress();
             // Ẩn tất cả elements
             const container = document.getElementById("container");
             container.style.display = "none";
@@ -1383,15 +1384,74 @@
         }
 
         function newGame() {
-            // Reset game state
-            selected = [];
-            hintPair = [];
-            clearHint();
-            clearLine();
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0,0,0,0.7) !important;
+                z-index: 99999 !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            `;
 
-            // Tạo bàn chơi mới
-            initBoard();
-            render();
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white !important;
+                padding: 20px !important;
+                border-radius: 8px !important;
+                text-align: center !important;
+                min-width: 250px !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+            `;
+
+            dialog.innerHTML = `
+                <p style="margin: 0 0 15px 0; font-size: 16px; color: #333;">
+                    Bạn có chắc muốn quay về Level 1?
+                </p>
+                <button id="resetCancelBtn"
+                    style="background: #ccc;
+                        border: none; 
+                        padding: 8px 16px;
+                        margin: 5px; 
+                        border-radius: 4px;
+                        cursor: pointer;">
+                    Hủy
+                </button>
+                <button id="resetOkBtn"
+                    style="background: #f44336;
+                        color: white;
+                        border: none; 
+                        padding: 8px 16px;
+                        margin: 5px; 
+                        border-radius: 4px;
+                        cursor: pointer;">
+                    Đồng ý
+                </button>
+            `;
+
+            popup.appendChild(dialog);
+            document.body.appendChild(popup);
+
+            dialog.querySelector('#resetCancelBtn').onclick = () => {
+                document.body.removeChild(popup);
+            };
+
+            dialog.querySelector('#resetOkBtn').onclick = () => {
+                document.body.removeChild(popup);
+                selected = [];
+                hintPair = [];
+                clearHint();
+                clearLine();
+                currentLevel = 1;
+                updateLevel();
+                saveGameProgress();
+                initBoard();
+                render();
+            };
         }
 
         function updateLevel() {
@@ -1403,10 +1463,33 @@
             document.getElementById('soundBtn').textContent = soundEnabled ? "🔊 Âm thanh" : "🔇 Tắt âm thanh";
         }
 
+        function loadGameProgress() {
+            try {
+                const cookies = document.cookie.split(';');
+
+                const levelCookie = cookies.find(cookie =>
+                    cookie.trim().startsWith('pikachuLevel=')
+                );
+
+                if (levelCookie) {
+                    const savedLevel = parseInt(levelCookie.split('=')[1].trim());
+                    if (savedLevel && savedLevel > 0) {
+                        currentLevel = savedLevel;
+                    }
+                }
+
+            } catch (error) {
+                console.log('Cannot load from cookie:', error);
+                currentLevel = 1;
+            }
+            updateLevel();
+        }
+
         document.getElementById('hintBtn').addEventListener('click', showHint);
         document.getElementById('refreshBtn').addEventListener('click', newGame);
         document.getElementById('soundBtn').addEventListener('click', changeSound);
 
+        loadGameProgress();
         initBoard();
         render();
 
@@ -1506,6 +1589,20 @@
                     document.body.removeChild(msg);
                 }
             }, 1500);
+        }
+
+        function saveGameProgress() {
+            try {
+                const expireDate = new Date();
+                expireDate.setFullYear(expireDate.getFullYear() + 100);
+
+                document.cookie = `pikachuLevel=${currentLevel}; expires=${expireDate.toUTCString()}; path=/; SameSite=Lax`;
+
+                document.cookie = `pikachuSaved=${Date.now()}; expires=${expireDate.toUTCString()}; path=/; SameSite=Lax`;
+
+            } catch (error) {
+                console.log('Cannot save to cookie:', error);
+            }
         }
 
         document.addEventListener('gesturestart', e => e.preventDefault());
