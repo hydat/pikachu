@@ -721,6 +721,9 @@
         let startTime = null;
         let timerInterval = null;
 
+        let audioCxt = null;
+        let isAudioInitialized = false;
+
         function stopTimer() {
             clearInterval(timerInterval);
         }
@@ -1243,7 +1246,16 @@
         }
 
         function createAudioContext() {
-            return new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioCxt || audioCxt.state === 'closed') {
+                audioCxt = new (window.AudioContext || window.webkitAudioContext)();
+                isAudioInitialized = true;
+            }
+
+            if (audioCxt.state === 'suspended') {
+                audioCxt.resume();
+            }
+
+            return audioCxt;
         }
 
         function playCorrectSound() {
