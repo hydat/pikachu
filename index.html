@@ -1410,7 +1410,7 @@
 
             dialog.innerHTML = `
                 <p style="margin: 0 0 15px 0; font-size: 16px; color: #333;">
-                    Bạn có chắc muốn quay về Level 1?
+                    Bạn có chắc muốn chơi lại màn này không?
                 </p>
                 <button id="resetCancelBtn"
                     style="background: #ccc;
@@ -1446,7 +1446,6 @@
                 hintPair = [];
                 clearHint();
                 clearLine();
-                currentLevel = 1;
                 updateLevel();
                 saveGameProgress();
                 initBoard();
@@ -1475,10 +1474,11 @@
                     const encodedData = gameStateCookie.split('=')[1].trim();
                     const gameData = decodeURIComponent(encodedData);
                     const gameState = JSON.parse(gameData);
-                    currentLevel = gameState.level;
+                    currentLevel = 500;
                 } else {
                     currentLevel = 1;
                 }
+                saveGameProgress();
 
             } catch (error) {
                 console.log('Cannot load from cookie:', error);
