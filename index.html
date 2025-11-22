@@ -1474,11 +1474,10 @@
                     const encodedData = gameStateCookie.split('=')[1].trim();
                     const gameData = decodeURIComponent(encodedData);
                     const gameState = JSON.parse(gameData);
-                    currentLevel = 500;
+                    currentLevel = gameState.level;
                 } else {
                     currentLevel = 1;
                 }
-                saveGameProgress();
 
             } catch (error) {
                 console.log('Cannot load from cookie:', error);
